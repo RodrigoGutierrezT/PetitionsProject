@@ -9,6 +9,7 @@ import UIKit
 
 class ViewController: UITableViewController {
     var petitions = [Petition]()
+    var filteredPetitions = [Petition]()
 
     override func viewDidLoad() { 
         super.viewDidLoad()
@@ -25,6 +26,7 @@ class ViewController: UITableViewController {
         if let url = URL(string: urlString) {
             if let data = try? Data(contentsOf: url) {
                 parse(json: data)
+                filteredPetitions = petitions
                 return
             }
         }
@@ -49,13 +51,13 @@ class ViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return petitions.count
+        return filteredPetitions.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         
-        let petition = petitions[indexPath.row]
+        let petition = filteredPetitions[indexPath.row]
         
         cell.textLabel?.text = petition.title
         cell.detailTextLabel?.text = petition.body
@@ -64,9 +66,12 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = DetailViewController()
-        vc.detailItem = petitions[indexPath.row]
+        vc.detailItem = filteredPetitions[indexPath.row]
         navigationController?.pushViewController(vc, animated: true)
     }
-
+    
+    func searchPetition(word: String) {
+        filteredPetitions = petitions.filter({ $0.title.contains(word) })
+    }
 }
 
