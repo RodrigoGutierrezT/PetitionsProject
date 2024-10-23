@@ -15,6 +15,8 @@ class ViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(promptSearch))
+        
         let urlString: String
         
         if navigationController?.tabBarItem.tag == 0 {
@@ -70,8 +72,23 @@ class ViewController: UITableViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
     
+    @objc func promptSearch() {
+        let ac = UIAlertController(title: "Search", message: nil, preferredStyle: .alert)
+        ac.addTextField()
+        
+        let searchAction = UIAlertAction(title: "Search", style: .default) { [weak self, weak ac] _ in
+            guard let word = ac?.textFields?[0].text else { return }
+            
+            self?.searchPetition(word: word)
+        }
+        
+        ac.addAction(searchAction)
+        present(ac, animated: true)
+    }
+    
     func searchPetition(word: String) {
         filteredPetitions = petitions.filter({ $0.title.contains(word) })
+        tableView.reloadData()
     }
 }
 
